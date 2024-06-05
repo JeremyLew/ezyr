@@ -1,7 +1,7 @@
 #' Format p-value
 #'
 #' `format_p_value` converts p-values in the raw numeric form
-#' to a string for presenting in tables
+#' to a string for presenting in tables.
 #'
 #' @param p_value (numeric or numeric vector) p-value
 #'
@@ -46,19 +46,20 @@ format_p_value <- function(p_value) {
 #'
 #' @examples
 #' library(dplyr)
-#' library(mlbench)
-#' data("BostonHousing2")
+#' if (require("mlbench") & require("forcats")) {
+#'   data(BostonHousing2, package = "mlbench")
 #'
-#' glm(medv ~ crim + zn + indus + town + rm + age + dis,
-#'   data = BostonHousing2 %>%
-#'     filter(town %in% c(
-#'       "Newton", "Boston South Boston", "Boston Roxbury",
-#'       "Somerville", "Boston Savin Hill", "Cambridge"
-#'     )) %>%
-#'     mutate_at("town", forcats::fct_drop),
-#'   family = gaussian(link = "identity")
-#' ) %>%
-#'   get_regression_presentation_template()
+#'   glm(medv ~ crim + zn + indus + town + rm + age + dis,
+#'     data = BostonHousing2 %>%
+#'       filter(town %in% c(
+#'         "Newton", "Boston South Boston", "Boston Roxbury",
+#'         "Somerville", "Boston Savin Hill", "Cambridge"
+#'       )) %>%
+#'       dplyr::mutate_at("town", forcats::fct_drop),
+#'     family = gaussian(link = "identity")
+#'   ) %>%
+#'     get_regression_presentation_template()
+#' }
 #'
 get_regression_presentation_template <- function(model) {
   variable_name <- c()
@@ -71,9 +72,12 @@ get_regression_presentation_template <- function(model) {
     var0 <- c(var0, "header")
 
     # Main variable names
-    variable_name <- c(variable_name,
-                       ifelse(!is.null(labelled::var_label(term_)),
-                              labelled::var_label(term_), term))
+    variable_name <- c(
+      variable_name,
+      ifelse(!is.null(labelled::var_label(term_)),
+        labelled::var_label(term_), term
+      )
+    )
 
     # Categorical variables
     if (!is.null(vlevels)) {
@@ -92,6 +96,6 @@ get_regression_presentation_template <- function(model) {
 
   return(
     data.frame(variable_name, var0, var) %>%
-    dplyr::mutate(dplyr::across(.cols = c(var0, var), .fns = ~ replace(.x, .x == "", NA)))
+      dplyr::mutate(dplyr::across(.cols = c(var0, var), .fns = ~ replace(.x, .x == "", NA)))
   )
 }

@@ -1,15 +1,15 @@
 #' Plot a histogram from a MatchIt object
-#' 
-#' `plot_propensity_score_histogram` plots a mirrored histogram which 
-#' enables visual inspection of the distribution of propensity scores 
+#'
+#' `plot_propensity_score_histogram` plots a mirrored histogram which
+#' enables visual inspection of the distribution of propensity scores
 #' in the treatment vs control group.
 #'
-#' @param matchit_obj A MatchIt object from the MatchIt R package
-#' @param trt_control_var string variable that stores the treatment/control grouping
-#' @param trt_label string value for treatment group in trt_control_var (e.g. video_consult_grp)
-#' @param control_label string value for control group in trt_control_var (e.g. face_to_face_grp)
-#' @param is_after_matching bool TRUE for after-matching plot, FALSE for before-matching plot
-#' @param num_bins integer number of bins of the histogram
+#' @param matchit_obj (matchit object) A matchit object from the MatchIt R package
+#' @param trt_control_var (quosure) variable that stores the treatment/control grouping
+#' @param trt_label (character) value for treatment group in trt_control_var (e.g. video_consult_grp)
+#' @param control_label (character) value for control group in trt_control_var (e.g. face_to_face_grp)
+#' @param is_after_matching (logical) TRUE for after-matching plot, FALSE for before-matching plot
+#' @param num_bins (numeric) number of bins of the histogram
 #'
 #' @return ggplot object
 #' @export
