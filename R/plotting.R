@@ -4,7 +4,7 @@
 #' enables visual inspection of the distribution of propensity scores
 #' in the treatment vs control group.
 #'
-#' @param matchit_obj (matchit object) A matchit object from the MatchIt R package
+#' @param matchit_obj (matchit object) A [MatchIt::matchit] object from the MatchIt R package
 #' @param trt_control_var (quosure) variable that stores the treatment/control grouping
 #' @param trt_label (character) value for treatment group in trt_control_var (e.g. video_consult_grp)
 #' @param control_label (character) value for control group in trt_control_var (e.g. face_to_face_grp)

@@ -1,7 +1,7 @@
 #' Rename column names
 #'
 #' `rename_colnames` cleans up column names of your raw data frame with
-#' [make.names()], replaces whitespaces with a separator of your choice
+#' [make.names], replaces whitespaces with a separator of your choice
 #' and converts to lower case.
 #'
 #' @param df (data.frame) Your data in the form of a data frame
@@ -56,48 +56,62 @@ rename_colnames <- function(df, separator = "_", add_labels = TRUE) {
 
 #' Safe left join
 #'
-#' `safe_left_join` is a wrapper around [dplyr::left_join()] that does an additional
+#' `safe_left_join` is a wrapper around [dplyr::left_join] that does an additional
 #' check for additional rows joined unto the left data frame.
 #'
 #' @param left_df (data.frame) Left data frame to left join to
 #' @param right_df (data.frame) Right data frame to join unto the left data frame
-#' @param ... (ellipsis) Extra arguments to pass into [dplyr::left_join()]
+#' @param ... (ellipsis) Extra arguments to pass into [dplyr::left_join]
 #'
 #' @return (data.frame) left_df, the left data frame
 #' @export
 #'
 #' @examples
+#' # Left table ----------------------------------------------------------------
 #' left_table <- data.frame(
-#'   ID = sprintf("%s%s", sample(1000:2000, 5, replace = TRUE), sample(letters, 5, replace = TRUE)),
+#'   ID = sprintf(
+#'          "%s%s",
+#'          sample(1000:2000, 5, replace = TRUE),
+#'          sample(letters, 5, replace = TRUE)
+#'        ),
 #'   column_b = runif(5, min = 0, max = 1),
 #'   column_c = sample(letters, 5, replace = TRUE)
 #' )
 #' print(left_table)
 #'
+#' # Right table ---------------------------------------------------------------
 #' right_table <- data.frame(
 #'   ID = left_table$ID,
 #'   column_d = runif(5, min = 10, max = 50)
 #' )
 #' print(right_table)
 #'
-#' # Left join when the row count of the left table stays the same
+#' # Left table has same row count after join ----------------------------------
 #' left_table %>%
 #'   safe_left_join(right_table, by = "ID") %>%
 #'   print()
 #'
+#' # Right table with duplicated ID --------------------------------------------
 #' right_table2 <- rbind(right_table, data.frame(
 #'   ID = right_table[3:4, "ID"],
 #'   column_d = runif(2, min = 10, max = 50)
 #' ))
 #' print(right_table2)
 #'
-#' # Left join when the row count of the left table increases
-#' left_table %>%
-#'   safe_left_join(right_table2, by = "ID") %>%
-#'   print()
+#' # Left table has more rows after join ---------------------------------------
+#' try(
+#'   left_table %>%
+#'     safe_left_join(right_table2, by = "ID") %>%
+#'     print()
+#' )
 safe_left_join <- function(left_df, right_df, ...) {
   PRE_JOIN_ROW_CNT <- nrow(left_df)
   left_df <- left_df %>% dplyr::left_join(right_df, ...)
-  assertthat::assert_that(assertthat::are_equal(nrow(left_df), PRE_JOIN_ROW_CNT), msg = "Row count after join not equals row count before join")
+  assertthat::assert_that(
+    assertthat::are_equal(
+      nrow(left_df), PRE_JOIN_ROW_CNT
+    ),
+    msg = "Row count after join not equals row count before join"
+  )
   left_df
 }
