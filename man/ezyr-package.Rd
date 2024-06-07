@@ -8,6 +8,13 @@
 \description{
 This package contains helper functions that make it easier to handle, analyse, and present data.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://jeremylew.github.io/ezyr/}
+}
+
+}
 \author{
 \strong{Maintainer}: Jeremy Lew \email{first@example.com}
 
