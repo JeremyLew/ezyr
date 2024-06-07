@@ -26,3 +26,4 @@ Imports:
 Suggests:
     mlbench,
     forcats,
+URL: https://jeremylew.github.io/ezyr/
