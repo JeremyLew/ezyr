@@ -1,48 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/404.html</loc>
+    <loc>https://jeremylew.github.io/ezyr/404.html</loc>
   </url>
   <url>
-    <loc>/LICENSE-text.html</loc>
+    <loc>https://jeremylew.github.io/ezyr/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>/LICENSE.html</loc>
+    <loc>https://jeremylew.github.io/ezyr/LICENSE.html</loc>
   </url>
   <url>
-    <loc>/authors.html</loc>
+    <loc>https://jeremylew.github.io/ezyr/authors.html</loc>
   </url>
   <url>
-    <loc>/index.html</loc>
+    <loc>https://jeremylew.github.io/ezyr/index.html</loc>
   </url>
   <url>
-    <loc>/reference/ezyr-package.html</loc>
+    <loc>https://jeremylew.github.io/ezyr/reference/ezyr-package.html</loc>
   </url>
   <url>
-    <loc>/reference/format_p_value.html</loc>
+    <loc>https://jeremylew.github.io/ezyr/reference/format_p_value.html</loc>
   </url>
   <url>
-    <loc>/reference/get_regression_presentation_template.html</loc>
+    <loc>https://jeremylew.github.io/ezyr/reference/get_regression_presentation_template.html</loc>
   </url>
   <url>
-    <loc>/reference/index.html</loc>
+    <loc>https://jeremylew.github.io/ezyr/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/pipe.html</loc>
+    <loc>https://jeremylew.github.io/ezyr/reference/pipe.html</loc>
   </url>
   <url>
-    <loc>/reference/plot_propensity_score_histogram.html</loc>
+    <loc>https://jeremylew.github.io/ezyr/reference/plot_propensity_score_histogram.html</loc>
   </url>
   <url>
-    <loc>/reference/rename_colnames.html</loc>
+    <loc>https://jeremylew.github.io/ezyr/reference/rename_colnames.html</loc>
   </url>
   <url>
-    <loc>/reference/safe_left_join.html</loc>
+    <loc>https://jeremylew.github.io/ezyr/reference/safe_left_join.html</loc>
   </url>
   <url>
-    <loc>/reference/tabulate_glm_result.html</loc>
+    <loc>https://jeremylew.github.io/ezyr/reference/tabulate_glm_result.html</loc>
   </url>
   <url>
-    <loc>/reference/write_to_excel.html</loc>
+    <loc>https://jeremylew.github.io/ezyr/reference/write_to_excel.html</loc>
   </url>
 </urlset>
