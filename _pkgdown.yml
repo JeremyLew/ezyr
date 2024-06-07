@@ -1,0 +1,31 @@
+url: https://jeremylew.github.io/ezyr/
+template:
+  bootstrap: 5
+
+reference:
+- title: File operations
+  desc: >
+    Functions that help with file operations
+  contents:
+  - write_to_excel
+
+- title: Data operations
+  desc: >
+    Functions that help with data operations
+  contents:
+  - rename_colnames 
+  - safe_left_join
+
+- title: Formatting
+  desc: >
+    Functions that help with formatting
+  contents:
+  - format_p_value 
+  - get_regression_presentation_template 
+  - tabulate_glm_result 
+
+- title: Plotting
+  desc: >
+    Functions that help with plotting
+  contents:
+  - plot_propensity_score_histogram
