@@ -26,4 +26,5 @@ Imports:
 Suggests:
     mlbench,
     forcats,
+    mlogit
 URL: https://jeremylew.github.io/ezyr/

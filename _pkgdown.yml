@@ -7,7 +7,8 @@ reference:
   desc: >
     Functions that help with file operations
   contents:
-  - write_to_excel
+  - export_to_excel
+  - export_dataframe_labels
 
 - title: Data operations
   desc: >
@@ -21,8 +22,10 @@ reference:
     Functions that help with formatting
   contents:
   - format_p_value 
-  - get_regression_presentation_template 
+  - get_presentation_template_glm
   - tabulate_glm_result 
+  - get_presentation_template_mlogit
+  - tabulate_mlogit_result
 
 - title: Plotting
   desc: >
