@@ -34,10 +34,10 @@ format_p_value <- function(p_value) {
 
 #' Get presentation template for a generalised linear model
 #'
-#' `get_regression_presentation_template` creates a data.frame template that
+#' `get_presentation_template_glm` creates a data.frame template that
 #' lays out the variables in your model e.g. levels of a factor variable.
 #'
-#' `get_regression_presentation_template` has been incorporated into [tabulate_glm_result],
+#' `get_presentation_template_glm` has been incorporated into [tabulate_glm_result],
 #' to create a table of your GLM results for presentation in an Rmarkdown document.
 #'
 #' @param model (glm object) A [stats::glm] model object
@@ -59,10 +59,10 @@ format_p_value <- function(p_value) {
 #'       dplyr::mutate_at("town", forcats::fct_drop),
 #'     family = gaussian(link = "identity")
 #'   ) %>%
-#'     get_regression_presentation_template()
+#'     get_presentation_template_glm()
 #' }
 #'
-get_regression_presentation_template <- function(model) {
+get_presentation_template_glm <- function(model) {
   variable_name <- c()
   var0 <- c()
   var <- c()
@@ -177,8 +177,226 @@ tabulate_glm_result <- function(model,
   ))
 
   # join to template
-  get_regression_presentation_template(model) %>%
+  get_presentation_template_glm(model) %>%
     safe_left_join(results %>% tibble::rownames_to_column("var"),
       by = "var"
     )
+}
+
+
+#' Get presentation template for a multinomial logistic regression model
+#'
+#' `get_presentation_template_mlogit` creates a data.frame
+#' template that lays out the variables in your model.
+#'
+#' @param model (mlogit object) A [mlogit::mlogit] model object
+#' @param data_labels (list) A named list of labels
+#' - names: variable names
+#' - values: labels
+#' - If the labels were set with the labelled package,
+#' the list is obtained by invoking [labelled::var_label()]
+#'
+#' @return (data.frame) Table of your multinomial logistic regression results
+#' @export
+#'
+#' @examples
+#' library(mlogit)
+#' data(iris)
+#'
+#' # Run a multinomial logistic regression on iris dataset ---------------------
+#' mlogit(Species ~ 1 | Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
+#'   data = mlogit.data(
+#'     iris %>%
+#'       mutate(Petal.Length = ifelse(
+#'         Petal.Length < 2.5,
+#'         "Petal length < 2.5",
+#'         "Petal length >= 2.5"
+#'       ) %>%
+#'         forcats::fct_relevel("Petal length < 2.5", "Petal length >= 2.5")),
+#'     choice = "Species",
+#'     shape = "wide"
+#'   ),
+#'   reflevel = "setosa",
+#'   na.action = na.omit
+#' ) %>%
+#'   get_presentation_template_mlogit()
+#'
+#' # Run a multinomial logistic regression on labelled iris dataset ------------
+#' labels <- list(
+#'   Sepal.Length = "Sepal length",
+#'   Sepal.Width = "Sepal width",
+#'   Petal.Length = "Petal length",
+#'   Petal.Width = "Petal width"
+#' )
+#' labelled::var_label(iris) <- labels
+#' mlogit(Species ~ 1 | Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
+#'   data = mlogit.data(
+#'     iris %>%
+#'       mutate(Petal.Length = ifelse(
+#'         Petal.Length < 2.5,
+#'         "Petal length < 2.5",
+#'         "Petal length >= 2.5"
+#'       ) %>%
+#'         forcats::fct_relevel("Petal length < 2.5", "Petal length >= 2.5")),
+#'     choice = "Species",
+#'     shape = "wide"
+#'   ),
+#'   reflevel = "setosa",
+#'   na.action = na.omit
+#' ) %>%
+#'   get_presentation_template_mlogit(data_labels = labelled::var_label(iris))
+#'
+get_presentation_template_mlogit <- function(model, data_labels = NULL) {
+  variable_name <- c()
+  var0 <- c()
+  var <- c()
+  if (is.null(data_labels)) {
+    data_labels <- labels(stats::terms(model$formula)) %>%
+      purrr::set_names() %>%
+      purrr::map(~NULL)
+  }
+
+  for (term in labels(stats::terms(model$formula))) {
+    vlevels <- levels(model$model[[term]])
+    var0 <- c(var0, "header")
+
+    # Main variable names
+    variable_name <- c(variable_name, ifelse(!is.null(data_labels[[term]]), data_labels[[term]], term))
+
+    # Categorical variables
+    if (!is.null(vlevels)) {
+      var <- c(var, "")
+      for (i in 1:length(vlevels)) {
+        variable_name <- c(variable_name, vlevels[i])
+        var0 <- c(var0, ifelse(i == 1, "Ref", ""))
+        var <- c(var, ifelse(i > 1, paste(term, vlevels[i], sep = ""), ""))
+      }
+    }
+    # Continuous variables
+    else {
+      var <- c(var, term)
+    }
+  }
+
+  data.frame(variable_name, var0, var) %>%
+    dplyr::mutate(dplyr::across(
+      .cols = c(var0, var),
+      .fns = ~ replace(.x, .x == "", NA)
+    ))
+}
+
+
+#' Tabulate multinomial logistic regression result
+#'
+#' `tabulate_mlogit_result` tabulates the results of your multinomial logistic regression
+#' that were created from running [mlogit::mlogit].
+#'
+#' @param model (mlogit object) A [mlogit::mlogit] model object
+#' @param outcome_levels_2onwards (character) A character vector of outcome levels, from level 2 onwards
+#' 1. outcome level 1 refers to the reference level (omitted)
+#' 1. outcome levels 2 onwards refers to other outcome levels other than the reference level
+#' 1. the results for each of the outcome levels will be tabulated in order, from left to right
+#' @param data_labels (list) A named list of labels
+#' - names: variable names
+#' - values: labels
+#' - If the labels were set with the labelled package,
+#' the list is obtained by invoking [labelled::var_label()]
+#' @param num_dp (numeric) Number of decimal places to present confidence intervals. Defaults to 2 d.p.
+#'
+#' @return (data.frame) Table of your multinomial logistic regression results
+#' @export
+#'
+#' @examples
+#' library(mlogit)
+#' data(iris)
+#'
+#' # Run a multinomial logistic regression on iris dataset ---------------------
+#' mlogit(Species ~ 1 | Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
+#'   data = mlogit.data(
+#'     iris %>%
+#'       mutate(Petal.Length = ifelse(
+#'         Petal.Length < 2.5,
+#'         "Petal length < 2.5",
+#'         "Petal length >= 2.5"
+#'       ) %>%
+#'         forcats::fct_relevel("Petal length < 2.5", "Petal length >= 2.5")),
+#'     choice = "Species",
+#'     shape = "wide"
+#'   ),
+#'   reflevel = "setosa",
+#'   na.action = na.omit
+#' ) %>%
+#'   tabulate_mlogit_result(c("versicolor", "virginica"))
+#'
+#' # Run a multinomial logistic regression on labelled iris dataset ------------
+#' labels <- list(
+#'   Sepal.Length = "Sepal length",
+#'   Sepal.Width = "Sepal width",
+#'   Petal.Length = "Petal length",
+#'   Petal.Width = "Petal width"
+#' )
+#' labelled::var_label(iris) <- labels
+#' mlogit(Species ~ 1 | Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
+#'   data = mlogit.data(
+#'     iris %>%
+#'       mutate(Petal.Length = ifelse(
+#'         Petal.Length < 2.5,
+#'         "Petal length < 2.5",
+#'         "Petal length >= 2.5"
+#'       ) %>%
+#'         forcats::fct_relevel("Petal length < 2.5", "Petal length >= 2.5")),
+#'     choice = "Species",
+#'     shape = "wide"
+#'   ),
+#'   reflevel = "setosa",
+#'   na.action = na.omit
+#' ) %>%
+#'   tabulate_mlogit_result(c("versicolor", "virginica"), data_labels = labelled::var_label(iris))
+#'
+tabulate_mlogit_result <- function(model, outcome_levels_2onwards, data_labels = NULL, num_dp = 2) {
+  Variable <- p_value <- Beta <- NULL
+  overall_results <- cbind(stats::coef(summary(model)), stats::confint(model)) %>%
+    as.data.frame() %>%
+    dplyr::rename(
+      Beta = "Estimate",
+      p_value = dplyr::matches("Pr"),
+      CI_lower = "2.5 %",
+      CI_upper = "97.5 %"
+    ) %>%
+    dplyr::mutate(odds_ratio = exp(Beta)) %>%
+    dplyr::mutate(dplyr::across(
+      .cols = c("CI_lower", "CI_upper"),
+      .fns = exp
+    )) %>%
+    dplyr::mutate(
+      "95% CI" = dplyr::case_when(
+        CI_upper > 1e3 ~ sprintf(stringr::str_glue("%.{num_dp}f to %s"), CI_lower, formatC(CI_upper, format = "e", digits = num_dp)),
+        TRUE ~ sprintf(stringr::str_glue("%.{num_dp}f to %.{num_dp}f"), CI_lower, CI_upper)
+      ),
+      p_value_ = format_p_value(p_value)
+    ) %>%
+    tibble::rownames_to_column(var = "Variable")
+
+  # check that odds ratios are within confidence intervals
+  assertthat::assert_that(all(
+    (overall_results$odds_ratio >= overall_results$CI_lower) &
+      (overall_results$odds_ratio <= overall_results$CI_upper)
+  ))
+
+  for (i in 1:length(outcome_levels_2onwards)) {
+    if (i == 1) {
+      output <- overall_results %>%
+        dplyr::filter(stringr::str_detect(Variable, outcome_levels_2onwards[i])) %>%
+        dplyr::mutate(var = stringr::str_extract(Variable, stringr::str_glue(".*(?=:(.*)?{outcome_levels_2onwards[i]})")))
+    } else {
+      output <- output %>%
+        safe_left_join(overall_results %>%
+          dplyr::filter(stringr::str_detect(Variable, outcome_levels_2onwards[i])) %>%
+          dplyr::mutate(var = stringr::str_extract(Variable, stringr::str_glue(".*(?=:(.*)?{outcome_levels_2onwards[i]})"))), by = "var")
+    }
+  }
+
+  # join to template
+  get_presentation_template_mlogit(model, data_labels = data_labels) %>%
+    safe_left_join(output, by = "var")
 }
