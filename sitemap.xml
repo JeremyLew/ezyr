@@ -16,13 +16,22 @@
     <loc>https://jeremylew.github.io/ezyr/index.html</loc>
   </url>
   <url>
+    <loc>https://jeremylew.github.io/ezyr/reference/export_dataframe_labels.html</loc>
+  </url>
+  <url>
+    <loc>https://jeremylew.github.io/ezyr/reference/export_to_excel.html</loc>
+  </url>
+  <url>
     <loc>https://jeremylew.github.io/ezyr/reference/ezyr-package.html</loc>
   </url>
   <url>
     <loc>https://jeremylew.github.io/ezyr/reference/format_p_value.html</loc>
   </url>
   <url>
-    <loc>https://jeremylew.github.io/ezyr/reference/get_regression_presentation_template.html</loc>
+    <loc>https://jeremylew.github.io/ezyr/reference/get_presentation_template_glm.html</loc>
+  </url>
+  <url>
+    <loc>https://jeremylew.github.io/ezyr/reference/get_presentation_template_mlogit.html</loc>
   </url>
   <url>
     <loc>https://jeremylew.github.io/ezyr/reference/index.html</loc>
@@ -43,6 +52,6 @@
     <loc>https://jeremylew.github.io/ezyr/reference/tabulate_glm_result.html</loc>
   </url>
   <url>
-    <loc>https://jeremylew.github.io/ezyr/reference/write_to_excel.html</loc>
+    <loc>https://jeremylew.github.io/ezyr/reference/tabulate_mlogit_result.html</loc>
   </url>
 </urlset>
