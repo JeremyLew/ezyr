@@ -70,10 +70,10 @@ rename_colnames <- function(df, separator = "_", add_labels = TRUE) {
 #' # Left table ----------------------------------------------------------------
 #' left_table <- data.frame(
 #'   ID = sprintf(
-#'          "%s%s",
-#'          sample(1000:2000, 5, replace = TRUE),
-#'          sample(letters, 5, replace = TRUE)
-#'        ),
+#'     "%s%s",
+#'     sample(1000:2000, 5, replace = TRUE),
+#'     sample(letters, 5, replace = TRUE)
+#'   ),
 #'   column_b = runif(5, min = 0, max = 1),
 #'   column_c = sample(letters, 5, replace = TRUE)
 #' )
@@ -114,4 +114,79 @@ safe_left_join <- function(left_df, right_df, ...) {
     msg = "Row count after join not equals row count before join"
   )
   left_df
+}
+
+
+#' Label prefixed or suffixed dataframe columns
+#'
+#' `label_ix_columns` adds labels to column(s) of your data.frame which have the
+#' particular prefix/suffix you specified, by copying the labels from
+#' corresponding columns without the prefix/suffix.
+#' The labels are added with [labelled::var_label()].
+#'
+#' @param df (data.frame) Your data in the form of a data frame
+#' @param pattern (character) regex pattern to identify your prefix/suffix
+#' @param suffix (logical) TRUE if the pattern is a suffix.
+#' FALSE if the pattern is a prefix
+#'
+#' @return (data.frame) Your data with new labels added
+#' @export
+#'
+#' @examples
+#' library(labelled)
+#'
+#' # Example of suffix ---------------------------------------------------------
+#' df <- data.frame(
+#'   sex = sample(1:2, 5, replace = TRUE),
+#'   race = sample(1:4, 5, replace = TRUE)
+#' )
+#' df$sex.factor <- c("Female", "Male")[df$sex]
+#' df$race.factor <- c("Chinese", "Malay", "Indian", "Others")[df$race]
+#'
+#' # Set labels
+#' labels <- list(
+#'   sex = "Sex",
+#'   race = "Race"
+#' )
+#' var_label(df) <- labels
+#'
+#' # Get labels after label_ix_columns()
+#' var_label(label_ix_columns(df, ".factor", suffix = TRUE))
+#'
+#' # Example of prefix ---------------------------------------------------------
+#' df <- data.frame(
+#'   sex = sample(1:2, 5, replace = TRUE),
+#'   race = sample(1:4, 5, replace = TRUE)
+#' )
+#' df$fct_sex <- c("Female", "Male")[df$sex]
+#' df$fct_race <- c("Chinese", "Malay", "Indian", "Others")[df$race]
+#'
+#' # Set labels
+#' labels <- list(
+#'   sex = "Sex",
+#'   race = "Race"
+#' )
+#' var_label(df) <- labels
+#'
+#' # Get labels after label_ix_columns()
+#' var_label(label_ix_columns(df, "fct_", suffix = FALSE))
+#'
+label_ix_columns <- function(df, pattern, suffix = TRUE) {
+  if (suffix) {
+    pattern_ix <- stringr::str_glue("{pattern}$")
+  } else { # prefix
+    pattern_ix <- stringr::str_glue("^{pattern}")
+  }
+
+  for (col in colnames(dplyr::select(df, -dplyr::matches(pattern_ix)))) {
+    if (suffix) {
+      col_ix <- stringr::str_glue("{col}{pattern}")
+    } else { # prefix
+      col_ix <- stringr::str_glue("{pattern}{col}")
+    }
+    if ((col_ix %in% colnames(df)) & !is.null(labelled::var_label(df[[col]]))) {
+      labelled::var_label(df[[col_ix]]) <- labelled::var_label(df[[col]])
+    }
+  }
+  df
 }

@@ -81,3 +81,25 @@ export_dataframe_labels <- function(data,
     tibble::rownames_to_column(var = "columns") %>%
     export_to_excel(workbook, sheet_name = sheet_name)
 }
+
+
+#' Ask for passkey
+#'
+#' `ask_for_key` asks for a passkey which will be used to create a sodium
+#' symmetric key (using [cyphr::key_sodium]) which can then be used to encrypt
+#' your data using [cyphr::encrypt].
+#'
+#' @return (cyphr_key) sodium key for encrypting data with [cyphr::encrypt]
+#' @export
+#'
+#' @examples
+#' try(
+#'   if (!exists("key")) {
+#'     key <- ask_for_key()
+#'     print(key)
+#'   }
+#' )
+#'
+ask_for_key <- function() {
+  key <- cyphr::key_sodium(sodium::hash(charToRaw(rstudioapi::askForPassword())))
+}

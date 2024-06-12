@@ -9,6 +9,7 @@ reference:
   contents:
   - export_to_excel
   - export_dataframe_labels
+  - ask_for_key
 
 - title: Data operations
   desc: >
@@ -16,6 +17,7 @@ reference:
   contents:
   - rename_colnames 
   - safe_left_join
+  - label_ix_columns
 
 - title: Formatting
   desc: >
