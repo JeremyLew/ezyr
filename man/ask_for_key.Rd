@@ -4,7 +4,12 @@
 \alias{ask_for_key}
 \title{Ask for passkey}
 \usage{
-ask_for_key()
+ask_for_key(key = NULL)
+}
+\arguments{
+\item{key}{(character) A passkey for creating a sodium key. Defaults to NULL,
+for which the user will be prompted for a passkey at runtime via
+\link[rstudioapi:askForPassword]{rstudioapi::askForPassword}}
 }
 \value{
 (cyphr_key) sodium key for encrypting data with \link[cyphr:encrypt]{cyphr::encrypt}

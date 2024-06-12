@@ -89,6 +89,10 @@ export_dataframe_labels <- function(data,
 #' symmetric key (using [cyphr::key_sodium]) which can then be used to encrypt
 #' your data using [cyphr::encrypt].
 #'
+#' @param key (character) A passkey for creating a sodium key. Defaults to NULL,
+#' for which the user will be prompted for a passkey at runtime via
+#' [rstudioapi::askForPassword]
+#'
 #' @return (cyphr_key) sodium key for encrypting data with [cyphr::encrypt]
 #' @export
 #'
@@ -100,6 +104,101 @@ export_dataframe_labels <- function(data,
 #'   }
 #' )
 #'
-ask_for_key <- function() {
-  key <- cyphr::key_sodium(sodium::hash(charToRaw(rstudioapi::askForPassword())))
+ask_for_key <- function(key = NULL) {
+  if (!is.null(key)) {
+    cyphr::key_sodium(sodium::hash(charToRaw(key)))
+  } else {
+    cyphr::key_sodium(sodium::hash(charToRaw(rstudioapi::askForPassword())))
+  }
+}
+
+
+#' Save dataframe to an encrypted RDS file
+#'
+#' `ezyr_save_rds` saves your dataframe to an RDS file and encrypts it with
+#' a sodium symmetric key.
+#'
+#' @param df (data.frame) A dataframe which you want to save to rds format
+#' @param filepath (character) Filepath to save your RDS file to
+#' @param key (cyphr_key) Sodium key obtained from invoking [ask_for_key]
+#'
+#' @return (data.frame) Original input dataframe
+#' @export
+#'
+#' @examples
+#' library(diffdf)
+#'
+#' # Create random dataframe for illustration purpose
+#' set.seed(123)
+#' df <- data.frame(
+#'   col1 = sample(letters, 10, replace = TRUE), # Random characters
+#'   col2 = round(runif(10, min = 1, max = 100), 0), # Random integers between 1 and 100
+#'   col3 = runif(10, min = 0, max = 1) # Random floats between 0 and 1
+#' )
+#'
+#' # Get a sodium key
+#' key <- ask_for_key("my_password")
+#'
+#' # Save RDS file in temp directory
+#' filepath <- file.path(tempdir(), "file1.rds")
+#' ezyr_save_rds(df, filepath, key)
+#' print(list.files(tempdir(), pattern = "\\.rds$"))
+#'
+#' # Read the RDS file back
+#' df_readback <- ezyr_read_rds(filepath, key)
+#'
+#' # Compare the read back RDS file with original
+#' diffdf(base = df, compare = df_readback)
+#'
+#' # Delete the saved RDS file in temp directory
+#' unlink(filepath)
+#' print(list.files(tempdir(), pattern = "\\.rds$"))
+#'
+ezyr_save_rds <- function(df, filepath, key) {
+  cyphr::encrypt(saveRDS(df, filepath), key)
+  invisible(df)
+}
+
+
+#' Read encrypted RDS file
+#'
+#' `ezyr_read_rds` reads data from an encrypted RDS file.
+#'
+#' @param filepath (character) Filepath to encrypted RDS file
+#' @param key (cyphr_key) Sodium key obtained from invoking [ask_for_key]
+#'
+#' @return Decrypted data from the encrypted RDS file
+#' @export
+#'
+#' @examples
+#' library(diffdf)
+#'
+#' # Create random dataframe for illustration purpose
+#' set.seed(123)
+#' df <- data.frame(
+#'   col1 = sample(letters, 10, replace = TRUE), # Random characters
+#'   col2 = round(runif(10, min = 1, max = 100), 0), # Random integers between 1 and 100
+#'   col3 = runif(10, min = 0, max = 1) # Random floats between 0 and 1
+#' )
+#'
+#' # Get a sodium key
+#' key <- ask_for_key("my_password")
+#'
+#' # Save RDS file in temp directory
+#' filepath <- file.path(tempdir(), "file1.rds")
+#' ezyr_save_rds(df, filepath, key)
+#' print(list.files(tempdir(), pattern = "\\.rds$"))
+#'
+#' # Read the RDS file back
+#' df_readback <- ezyr_read_rds(filepath, key)
+#'
+#' # Compare the read back RDS file with original
+#' diffdf(base = df, compare = df_readback)
+#'
+#' # Delete the saved RDS file in temp directory
+#' unlink(filepath)
+#' print(list.files(tempdir(), pattern = "\\.rds$"))
+#'
+ezyr_read_rds <- function(filepath, key) {
+  cyphr::decrypt(readRDS(filepath), key)
 }

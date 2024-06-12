@@ -10,6 +10,8 @@ reference:
   - export_to_excel
   - export_dataframe_labels
   - ask_for_key
+  - ezyr_save_rds
+  - ezyr_read_rds
 
 - title: Data operations
   desc: >
