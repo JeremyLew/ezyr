@@ -83,11 +83,11 @@ check for additional rows joined unto the left data frame.</p>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">left_table</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      ID  column_b column_c</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1116v 0.3542068        e</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1929a 0.8251994        h</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1528f 0.2738182        a</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 1179b 0.5700450        l</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 1183s 0.3357191        s</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1462p 0.1028646        q</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1040t 0.4348927        v</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1430f 0.9849570        r</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 1089k 0.8930511        q</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 1315h 0.8864691        b</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Right table ---------------------------------------------------------------</span></span></span>
 <span class="r-in"><span><span class="va">right_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
@@ -96,22 +96,22 @@ check for additional rows joined unto the left data frame.</p>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">right_table</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      ID column_d</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1116v 27.86810</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1929a 24.86045</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1528f 11.12244</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 1179b 28.63949</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 1183s 25.60126</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1462p 22.81493</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1040t 17.50764</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1430f 41.29177</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 1089k 13.74380</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 1315h 28.67116</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Left table has same row count after join ----------------------------------</span></span></span>
 <span class="r-in"><span><span class="va">left_table</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu">safe_left_join</span><span class="op">(</span><span class="va">right_table</span>, by <span class="op">=</span> <span class="st">"ID"</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      ID  column_b column_c column_d</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1116v 0.3542068        e 27.86810</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1929a 0.8251994        h 24.86045</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1528f 0.2738182        a 11.12244</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 1179b 0.5700450        l 28.63949</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 1183s 0.3357191        s 25.60126</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1462p 0.1028646        q 22.81493</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1040t 0.4348927        v 17.50764</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1430f 0.9849570        r 41.29177</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 1089k 0.8930511        q 13.74380</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 1315h 0.8864691        b 28.67116</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Right table with duplicated ID --------------------------------------------</span></span></span>
 <span class="r-in"><span><span class="va">right_table2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">right_table</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
@@ -120,13 +120,13 @@ check for additional rows joined unto the left data frame.</p>
 <span class="r-in"><span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">right_table2</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      ID column_d</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1116v 27.86810</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1929a 24.86045</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1528f 11.12244</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 1179b 28.63949</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 1183s 25.60126</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 1528f 10.80261</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7 1179b 25.07884</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 1462p 22.81493</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 1040t 17.50764</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 1430f 41.29177</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 1089k 13.74380</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 1315h 28.67116</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 1430f 30.46022</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7 1089k 33.99956</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Left table has more rows after join ---------------------------------------</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/try.html" class="external-link">try</a></span><span class="op">(</span></span></span>
