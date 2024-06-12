@@ -16,6 +16,9 @@
     <loc>https://jeremylew.github.io/ezyr/index.html</loc>
   </url>
   <url>
+    <loc>https://jeremylew.github.io/ezyr/reference/ask_for_key.html</loc>
+  </url>
+  <url>
     <loc>https://jeremylew.github.io/ezyr/reference/export_dataframe_labels.html</loc>
   </url>
   <url>
@@ -35,6 +38,9 @@
   </url>
   <url>
     <loc>https://jeremylew.github.io/ezyr/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://jeremylew.github.io/ezyr/reference/label_ix_columns.html</loc>
   </url>
   <url>
     <loc>https://jeremylew.github.io/ezyr/reference/pipe.html</loc>
