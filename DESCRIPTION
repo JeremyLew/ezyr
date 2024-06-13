@@ -14,9 +14,11 @@ RoxygenNote: 7.3.1
 Imports: 
     assertthat,
     cyphr,
+    data.table,
     dplyr,
     ggplot2,
     labelled,
+    lubridate,
     magrittr,
     MatchIt,
     openxlsx,

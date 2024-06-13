@@ -20,6 +20,7 @@ reference:
   - rename_colnames 
   - safe_left_join
   - label_ix_columns
+  - extract_reading_from_interval
 
 - title: Formatting
   desc: >
