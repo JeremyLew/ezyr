@@ -2,6 +2,10 @@ url: https://jeremylew.github.io/ezyr/
 template:
   bootstrap: 5
 
+navbar:
+  structure:
+    right: [search, github]
+
 reference:
 - title: File operations
   desc: >
