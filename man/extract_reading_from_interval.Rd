@@ -100,6 +100,7 @@ generate_fake_patient_data <- function(id) {
     relocate(time, .after = days_difference)
 }
 
+set.seed(2024)
 df_long <- rbind(
   generate_fake_patient_data("P01"),
   generate_fake_patient_data("P02"),

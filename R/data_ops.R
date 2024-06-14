@@ -261,6 +261,7 @@ label_ix_columns <- function(df, pattern, suffix = TRUE) {
 #'     relocate(time, .after = days_difference)
 #' }
 #'
+#' set.seed(2024)
 #' df_long <- rbind(
 #'   generate_fake_patient_data("P01"),
 #'   generate_fake_patient_data("P02"),
@@ -417,7 +418,7 @@ extract_reading_from_interval <- function(df_master,
 }
 
 
-#' Extend the output of the tableby function
+#' Extend a tableby table
 #'
 #' `extend_tableby` is a wrapper around [arsenal::tableby] that adds the
 #' following to a tableby table:
@@ -428,16 +429,24 @@ extract_reading_from_interval <- function(df_master,
 #' @param tableby_obj (tableby object) An [arsenal::tableby] object
 #' @param smd (logical) If TRUE, computes the standardised mean difference (SMD)
 #' @param smd_digits (numeric) Number of decimal places to express SMD
-#' @param bold_var (logical) If TRUE, variables will be wrapped with **
+#' @param bold_var (logical) If TRUE, variable sub-headers will be wrapped with **
 #'
 #' @return (data.frame) A tableby table appended with marker and SMD
 #' @export
 #'
 #' @examples
 #' library(arsenal)
+#' library(labelled)
 #' library(MatchIt)
 #' data(lalonde)
-#'
+#' 
+#' # Add labels (optional) -----------------------------------------------------
+#' var_label(lalonde) <- list(age = "Age",
+#'                            educ = "Education",
+#'                            race = "Race",
+#'                            married = "Marital status")
+#' 
+#' # Create tableby table ------------------------------------------------------
 #' tableby(treat ~ age + educ + race + married,
 #'   data = lalonde,
 #'   control = tableby.control(numeric.stats = c("Nmiss", "meansd", "medianq1q3", "range"))
@@ -451,7 +460,7 @@ extend_tableby <- function(tableby_obj,
   SMD <- Variable <- marker <- NULL
 
   # input data to tableby
-  data <- get(tableby_obj$Call$data)
+  data <- eval(tableby_obj$Call$data)
 
   table <- tableby_obj %>%
     summary(
@@ -482,7 +491,7 @@ extend_tableby <- function(tableby_obj,
       ))
     ))
 
-  # bold variables
+  # bold variable sub-headers
   if (bold_var) {
     table <- table %>%
       dplyr::mutate(dplyr::across(
@@ -515,5 +524,112 @@ extend_tableby <- function(tableby_obj,
         .fns = ~ tidyr::replace_na(.x, "")
       ))
   }
+  table
+}
+
+
+#' Extend a paired table
+#'
+#' `extend_paired` is a wrapper around [arsenal::paired] that adds a marker
+#' which enables the joining of two paired tables together.
+#'
+#' @param paired_obj (paired object) An [arsenal::paired] object
+#' @param bold_var (logical) If TRUE, variable sub-headers will be wrapped with **
+#'
+#' @return (data.frame) A paired table appended with marker
+#' @export
+#'
+#' @examples
+#' library(arsenal)
+#' library(tidyverse)
+#' library(labelled)
+#' 
+#' # Generate fake patient data for illustration -------------------------------
+#' generate_fake_patient_data <- function(id) {
+#'   data.frame(list(
+#'     patient_id = id,
+#'     time = c("baseline", "12-month"),
+#'     hba1c = runif(n = 2, min = 4, max = 14),
+#'     ldl = sample(c("good control", "bad control"))
+#'   ))
+#' }
+#'
+#' set.seed(2024)
+#' data <- map(
+#'   sprintf("P%s", str_pad(1:30, width = 2, pad = 0)),
+#'   generate_fake_patient_data
+#' ) %>%
+#'   bind_rows()
+#' print(head(data, 10))
+#' 
+#' # Add labels (optional) -----------------------------------------------------
+#' var_label(data) <- list(hba1c = "Hemoglobin A1c",
+#'                         ldl = "LDL control")
+#'
+#' # Create paired table -------------------------------------------------------
+#' paired(time ~ hba1c + ldl,
+#'   data = data %>% mutate(across(
+#'     .cols = time,
+#'     .fns = ~ fct_relevel(.x, "baseline", "12-month")
+#'   )),
+#'   id = patient_id,
+#'   control = paired.control(
+#'     digits = 2,
+#'     numeric.stats = c("Nmiss", "meansd", "medianq1q3", "range"),
+#'     numeric.test = "signed.rank",
+#'     signed.rank.correct = FALSE
+#'   )
+#' ) %>%
+#'   extend_paired()
+#'
+extend_paired <- function(paired_obj, bold_var = TRUE) {
+  marker <- Variable <- NULL
+
+  # input data to paired
+  data <- eval(paired_obj$Call$data)
+  labels <- labelled::var_label(data)
+
+  table <- paired_obj %>%
+    summary(text = TRUE, labelTranslations = purrr::map(labels, ~NULL)) %>%
+    as.data.frame()
+
+  colnames(table)[1] <- "Variable"
+
+  table <- table %>%
+    # add marker
+    dplyr::mutate(dplyr::across(
+      .cols = Variable,
+      .fns = ~ if_else(!stringr::str_detect(.x, "^-"), .x, NA_character_),
+      .names = "marker"
+    )) %>%
+    tidyr::fill(marker, .direction = "down") %>%
+    dplyr::mutate(dplyr::across(
+      .cols = marker,
+      .fns = ~ dplyr::if_else(
+        !stringr::str_detect(Variable, "^-"), .x,
+        sprintf("%s %s", .x, Variable)
+      )
+    )) %>%
+    # add labels
+    dplyr::mutate(dplyr::across(
+      .cols = Variable,
+      .fns = ~ purrr::map_chr(.x, ~ ifelse(
+        !is.null(labels[[.x]]),
+        labels[[.x]], .x
+      ))
+    ))
+
+  # bold variable sub-headers
+  if (bold_var) {
+    table <- table %>%
+      dplyr::mutate(dplyr::across(
+        .cols = Variable,
+        .fns = ~ dplyr::if_else(
+          !stringr::str_detect(.x, "^-"),
+          sprintf("**%s**", .x), .x
+        )
+      ))
+  }
+
   table
 }

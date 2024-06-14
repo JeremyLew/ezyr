@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_ops.R
 \name{extend_tableby}
 \alias{extend_tableby}
-\title{Extend the output of the tableby function}
+\title{Extend a tableby table}
 \usage{
 extend_tableby(tableby_obj, smd = TRUE, smd_digits = 2, bold_var = TRUE)
 }
@@ -13,7 +13,7 @@ extend_tableby(tableby_obj, smd = TRUE, smd_digits = 2, bold_var = TRUE)
 
 \item{smd_digits}{(numeric) Number of decimal places to express SMD}
 
-\item{bold_var}{(logical) If TRUE, variables will be wrapped with **}
+\item{bold_var}{(logical) If TRUE, variable sub-headers will be wrapped with **}
 }
 \value{
 (data.frame) A tableby table appended with marker and SMD
@@ -28,9 +28,17 @@ following to a tableby table:
 }
 \examples{
 library(arsenal)
+library(labelled)
 library(MatchIt)
 data(lalonde)
 
+# Add labels (optional) -----------------------------------------------------
+var_label(lalonde) <- list(age = "Age",
+                           educ = "Education",
+                           race = "Race",
+                           married = "Marital status")
+
+# Create tableby table ------------------------------------------------------
 tableby(treat ~ age + educ + race + married,
   data = lalonde,
   control = tableby.control(numeric.stats = c("Nmiss", "meansd", "medianq1q3", "range"))

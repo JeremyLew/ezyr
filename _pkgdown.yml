@@ -30,6 +30,7 @@ reference:
   - label_ix_columns
   - extract_reading_from_interval
   - extend_tableby
+  - extend_paired
 
 - title: Formatting
   desc: >

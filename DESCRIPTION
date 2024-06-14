@@ -36,5 +36,6 @@ Suggests:
     forcats,
     mlogit,
     diffdf,
-    arsenal
+    arsenal,
+    tidyverse
 URL: https://jeremylew.github.io/ezyr/
