@@ -249,14 +249,16 @@ label_ix_columns <- function(df, pattern, suffix = TRUE) {
 #'     ),
 #'     time = c(rep("baseline", 3), rep("6mth", 3), rep("12mth", 3))
 #'   ) %>%
-#'     mutate(visit_date = case_when(
-#'       time == "baseline" ~ enrolment_date + sample(-180:0, 3, replace = FALSE),
-#'       time == "6mth" ~ enrolment_date + sample(100:180, 3, replace = FALSE),
-#'       time == "12mth" ~ enrolment_date + sample(240:360, 3, replace = FALSE)
-#'     ),
-#'     days_difference = visit_date - enrolment_date) %>%
-#'   relocate(enrolment_date, .after = visit_date) %>%
-#'   relocate(time, .after = days_difference)
+#'     mutate(
+#'       visit_date = case_when(
+#'         time == "baseline" ~ enrolment_date + sample(-180:0, 3, replace = FALSE),
+#'         time == "6mth" ~ enrolment_date + sample(100:180, 3, replace = FALSE),
+#'         time == "12mth" ~ enrolment_date + sample(240:360, 3, replace = FALSE)
+#'       ),
+#'       days_difference = visit_date - enrolment_date
+#'     ) %>%
+#'     relocate(enrolment_date, .after = visit_date) %>%
+#'     relocate(time, .after = days_difference)
 #' }
 #'
 #' df_long <- rbind(
@@ -329,13 +331,15 @@ extract_reading_from_interval <- function(df_master,
   # check that df_master_fields have <ID> and <index_date>
   for (field in c("ID", "index_date")) {
     assertthat::assert_that(field %in% names(df_master_fields),
-                            msg = stringr::str_glue("<{field}> missing from df_master_fields"))
+      msg = stringr::str_glue("<{field}> missing from df_master_fields")
+    )
   }
 
   # check that df_long_fields have <reading_date> and <reading>
   for (field in c("reading_date", "reading")) {
     assertthat::assert_that(field %in% names(df_long_fields),
-                            msg = stringr::str_glue("<{field}> missing from df_long_fields"))
+      msg = stringr::str_glue("<{field}> missing from df_long_fields")
+    )
   }
 
   # check that fields specified in df_master_fields are found in df_master
@@ -375,7 +379,7 @@ extract_reading_from_interval <- function(df_master,
 
   # if <index_date> exists in df_long, drop it and join from df_master
   if (df_master_fields$index_date %in% colnames(df_long)) {
-    df_long <- df_long %>% dplyr::select(-df_master_fields$index_date) 
+    df_long <- df_long %>% dplyr::select(-df_master_fields$index_date)
     message(stringr::str_glue("<{df_master_fields$index_date}> is dropped from df_long,
                                instead it will be taken from df_master"))
   }
@@ -410,4 +414,106 @@ extract_reading_from_interval <- function(df_master,
   }
 
   df_master
+}
+
+
+#' Extend the output of the tableby function
+#'
+#' `extend_tableby` is a wrapper around [arsenal::tableby] that adds the
+#' following to a tableby table:
+#' 1. Marker for enabling the joining of two tableby tables together
+#' 1. Standardised mean difference (SMD) between the groups
+#'
+#'
+#' @param tableby_obj (tableby object) An [arsenal::tableby] object
+#' @param smd (logical) If TRUE, computes the standardised mean difference (SMD)
+#' @param smd_digits (numeric) Number of decimal places to express SMD
+#' @param bold_var (logical) If TRUE, variables will be wrapped with **
+#'
+#' @return (data.frame) A tableby table appended with marker and SMD
+#' @export
+#'
+#' @examples
+#' library(arsenal)
+#' library(MatchIt)
+#' data(lalonde)
+#'
+#' tableby(treat ~ age + educ + race + married,
+#'   data = lalonde,
+#'   control = tableby.control(numeric.stats = c("Nmiss", "meansd", "medianq1q3", "range"))
+#' ) %>%
+#'   extend_tableby()
+#'
+extend_tableby <- function(tableby_obj,
+                           smd = TRUE,
+                           smd_digits = 2,
+                           bold_var = TRUE) {
+  SMD <- Variable <- marker <- NULL
+
+  # input data to tableby
+  data <- get(tableby_obj$Call$data)
+
+  table <- tableby_obj %>%
+    summary(
+      text = TRUE,
+      labelTranslations = purrr::map(labelled::var_label(data), ~NULL)
+    ) %>%
+    as.data.frame()
+
+  colnames(table)[1] <- "Variable"
+  table <- table %>%
+    dplyr::mutate(dplyr::across(
+      .cols = Variable,
+      .fns = ~ dplyr::if_else(!stringr::str_detect(.x, "^-"), .x, NA_character_),
+      .names = "marker"
+    )) %>%
+    tidyr::fill(marker, .direction = "down") %>%
+    dplyr::mutate(dplyr::across(
+      .cols = marker,
+      .fns = ~ dplyr::if_else(!stringr::str_detect(Variable, "^-"), .x,
+        sprintf("%s %s", .x, Variable)
+      )
+    )) %>%
+    # add labels
+    dplyr::mutate(dplyr::across(
+      .cols = Variable,
+      .fns = ~ purrr::map_chr(.x, ~ ifelse(!is.null(labelled::var_label(data[[.x]])),
+        labelled::var_label(data[[.x]]), .x
+      ))
+    ))
+
+  # bold variables
+  if (bold_var) {
+    table <- table %>%
+      dplyr::mutate(dplyr::across(
+        .cols = Variable,
+        .fns = ~ dplyr::if_else(!stringr::str_detect(.x, "^-"), sprintf("**%s**", .x), .x)
+      ))
+  }
+
+  if (smd) {
+    smd <- tableone::CreateTableOne(
+      vars = all.vars(tableby_obj$Call$formula)[-1],
+      strata = all.vars(tableby_obj$Call$formula)[1],
+      data = data
+    ) %>%
+      tableone::ExtractSmd() %>%
+      as.data.frame() %>%
+      tibble::rownames_to_column("marker") %>%
+      stats::setNames(c("marker", "SMD")) %>%
+      dplyr::mutate(dplyr::across(
+        .cols = SMD,
+        .fns = ~ dplyr::if_else(as.numeric(table1::round_pad(.x, digits = smd_digits, round5up = TRUE)) < 0.01, "< 0.01",
+          table1::round_pad(.x, digits = smd_digits, round5up = TRUE)
+        )
+      ))
+
+    table <- table %>%
+      safe_left_join(smd, by = "marker") %>%
+      dplyr::mutate(dplyr::across(
+        .cols = SMD,
+        .fns = ~ tidyr::replace_na(.x, "")
+      ))
+  }
+  table
 }

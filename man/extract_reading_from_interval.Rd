@@ -88,14 +88,16 @@ generate_fake_patient_data <- function(id) {
     ),
     time = c(rep("baseline", 3), rep("6mth", 3), rep("12mth", 3))
   ) \%>\%
-    mutate(visit_date = case_when(
-      time == "baseline" ~ enrolment_date + sample(-180:0, 3, replace = FALSE),
-      time == "6mth" ~ enrolment_date + sample(100:180, 3, replace = FALSE),
-      time == "12mth" ~ enrolment_date + sample(240:360, 3, replace = FALSE)
-    ),
-    days_difference = visit_date - enrolment_date) \%>\%
-  relocate(enrolment_date, .after = visit_date) \%>\%
-  relocate(time, .after = days_difference)
+    mutate(
+      visit_date = case_when(
+        time == "baseline" ~ enrolment_date + sample(-180:0, 3, replace = FALSE),
+        time == "6mth" ~ enrolment_date + sample(100:180, 3, replace = FALSE),
+        time == "12mth" ~ enrolment_date + sample(240:360, 3, replace = FALSE)
+      ),
+      days_difference = visit_date - enrolment_date
+    ) \%>\%
+    relocate(enrolment_date, .after = visit_date) \%>\%
+    relocate(time, .after = days_difference)
 }
 
 df_long <- rbind(

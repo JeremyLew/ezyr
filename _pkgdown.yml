@@ -5,6 +5,10 @@ template:
 navbar:
   structure:
     right: [search, github]
+  components:
+    github:
+      icon: fa-github
+      href: https://github.com/JeremyLew/ezyr
 
 reference:
 - title: File operations
@@ -25,6 +29,7 @@ reference:
   - safe_left_join
   - label_ix_columns
   - extract_reading_from_interval
+  - extend_tableby
 
 - title: Formatting
   desc: >

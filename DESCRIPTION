@@ -27,10 +27,14 @@ Imports:
     rstudioapi,
     sodium,
     stringr,
-    tibble
+    table1,
+    tableone,
+    tibble,
+    tidyr
 Suggests:
     mlbench,
     forcats,
     mlogit,
-    diffdf
+    diffdf,
+    arsenal
 URL: https://jeremylew.github.io/ezyr/
