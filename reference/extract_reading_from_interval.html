@@ -68,9 +68,9 @@ extract the latest laboratory reading for each patient within the respective
 window periods to be considered as the "baseline" reading, "3-month" reading etc.</p><ol><li><p>a set of longitudinal data e.g. laboratory readings of patients</p></li>
 <li><p>a set of parameters that define the window period of observation for
 considering readings that would constitute as "baseline" reading,
-"3-month" reading etc. for example:</p><ul><li><p><em>baseline</em>: T-180 days to T</p></li>
-<li><p><em>3-month</em>: T+31 days to T+90 days</p></li>
-<li><p>where T is the index date which could be the enrolment date or
+"3-month" reading etc. for example:</p><ul><li><p><em>baseline</em>: <em>T-180</em> days to <em>T</em></p></li>
+<li><p><em>3-month</em>: <em>T+31</em> days to <em>T+90</em> days</p></li>
+<li><p>where <em>T</em> is the index date which could be the enrolment date or
 date of first visit</p></li>
 </ul></li>
 </ol></div>
@@ -91,7 +91,8 @@ date of first visit</p></li>
     <dl><dt>df_master</dt>
 <dd><p>(data.frame) Master dataframe to join the readings unto.
 <em>df_master</em> must minimally contain the following 2 columns:</p><ul><li><p>A column of IDs to identify each patient</p></li>
-<li><p>A column of index dates (represented by T as described above) for each patient</p></li>
+<li><p>A column of index dates (what we refer to as <em>T</em> in the description above) for each patient</p></li>
+<li><p>Both these columns will be identified in <em>df_master_fields</em></p></li>
 </ul></dd>
 
 
@@ -117,6 +118,11 @@ date of first visit</p></li>
 <dt>params</dt>
 <dd><p>(list) A named list where the names are the timepoints and the
 values are numeric vectors that represent <code>c(lower_bound, upper_bound)</code></p><ul><li><p>For example: <code>params &lt;- list(baseline = c(-180, 0), "3mth" = c(31, 90), "6mth" = c(120, 180))</code></p></li>
+<li><p>Both <code>lower</code> and <code>upper</code> bounds are included in defining the window period i.e. <code>lower_bound</code> &lt;= reading_date &lt;= <code>upper_bound</code></p></li>
+<li><p>For <code>params</code> given above, <code>extract_reading_from_interval</code> will consider</p><ul><li><p>Baseline reading: latest reading in <em>T-180</em> days &lt;= reading_date &lt;= <em>T</em> window</p></li>
+<li><p>3-month reading: latest reading in <em>T+31</em> days &lt;= reading_date &lt;= <em>T+90</em> days window</p></li>
+<li><p>6-month reading: latest reading in <em>T+120</em> days &lt;= reading_date &lt;= <em>T+180</em> days window</p></li>
+</ul></li>
 </ul></dd>
 
 </dl></div>
@@ -155,7 +161,10 @@ values are numeric vectors that represent <code>c(lower_bound, upper_bound)</cod
 <span class="r-in"><span>      <span class="va">time</span> <span class="op">==</span> <span class="st">"baseline"</span> <span class="op">~</span> <span class="va">enrolment_date</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="op">-</span><span class="fl">180</span><span class="op">:</span><span class="fl">0</span>, <span class="fl">3</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>      <span class="va">time</span> <span class="op">==</span> <span class="st">"6mth"</span> <span class="op">~</span> <span class="va">enrolment_date</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">100</span><span class="op">:</span><span class="fl">180</span>, <span class="fl">3</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>      <span class="va">time</span> <span class="op">==</span> <span class="st">"12mth"</span> <span class="op">~</span> <span class="va">enrolment_date</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">240</span><span class="op">:</span><span class="fl">360</span>, <span class="fl">3</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span>,</span></span>
+<span class="r-in"><span>    days_difference <span class="op">=</span> <span class="va">visit_date</span> <span class="op">-</span> <span class="va">enrolment_date</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/relocate.html" class="external-link">relocate</a></span><span class="op">(</span><span class="va">enrolment_date</span>, .after <span class="op">=</span> <span class="va">visit_date</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/relocate.html" class="external-link">relocate</a></span><span class="op">(</span><span class="va">time</span>, .after <span class="op">=</span> <span class="va">days_difference</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">df_long</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span></span>
@@ -169,43 +178,78 @@ values are numeric vectors that represent <code>c(lower_bound, upper_bound)</cod
 <span class="r-in"><span><span class="va">df_master</span> <span class="op">&lt;-</span> <span class="va">df_long</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="va">patient_id</span>, <span class="va">enrolment_date</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">df_master</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   patient_id enrolment_date</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1        P01     2023-06-12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2        P02     2024-01-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3        P03     2023-06-22</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1        P01     2023-06-13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2        P02     2024-01-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3        P03     2023-06-23</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Longitudinal data of readings</span></span></span>
-<span class="r-in"><span><span class="va">df_long</span> <span class="op">&lt;-</span> <span class="va">df_long</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">enrolment_date</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">## 1. days_difference = visit_date - enrolment_date</span></span></span>
+<span class="r-in"><span><span class="co">## 2. enrolment_date, days_difference and time are not required as input but</span></span></span>
+<span class="r-in"><span><span class="co">##    are shown for illustration purpose</span></span></span>
+<span class="r-in"><span><span class="co">## 3. enrolment_date will be joined unto df_long from df_master internally</span></span></span>
+<span class="r-in"><span><span class="co">## 4. days_difference will be computed internally</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">df_long</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    patient_id bp_systolic bp_diastolic hba1c     time visit_date</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1         P01          34           52     5 baseline 2022-12-23</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2         P01          76           71     7 baseline 2023-05-12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3         P01          53           14     6 baseline 2023-05-22</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4         P01         106           53     9     6mth 2023-10-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5         P01         108           94     4     6mth 2023-10-23</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6         P01          31           70    12     6mth 2023-11-10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7         P01          84           79    13    12mth 2024-02-28</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8         P01          91           43     8    12mth 2024-04-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9         P01          72           72    11    12mth 2024-05-11</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10        P02          94           37     4 baseline 2023-07-18</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11        P02          54           57    10 baseline 2023-08-16</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12        P02          99           92    13 baseline 2023-12-09</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13        P02          66           11     6     6mth 2024-05-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14        P02         140           84     9     6mth 2024-05-23</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15        P02         143           44    11     6mth 2024-06-16</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16        P02         125           77     8    12mth 2024-09-12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17        P02          37           12    14    12mth 2024-10-28</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18        P02          62           47     5    12mth 2024-12-25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19        P03          46           64     6 baseline 2023-02-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20        P03         144           41    11 baseline 2023-02-14</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21        P03         130           78    12 baseline 2023-06-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22        P03         126           45     8     6mth 2023-10-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23        P03          42           20     4     6mth 2023-10-22</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24        P03         131           42    13     6mth 2023-11-11</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25        P03          62           16     9    12mth 2024-03-21</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26        P03         106           32    14    12mth 2024-03-28</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27        P03         111           43     7    12mth 2024-05-08</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    patient_id bp_systolic bp_diastolic hba1c visit_date enrolment_date</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1         P01          34           52     5 2022-12-24     2023-06-13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2         P01          76           71     7 2023-05-13     2023-06-13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3         P01          53           14     6 2023-05-23     2023-06-13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4         P01         106           53     9 2023-10-07     2023-06-13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5         P01         108           94     4 2023-10-24     2023-06-13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6         P01          31           70    12 2023-11-11     2023-06-13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7         P01          84           79    13 2024-02-29     2023-06-13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8         P01          91           43     8 2024-04-03     2023-06-13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9         P01          72           72    11 2024-05-12     2023-06-13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10        P02          94           37     4 2023-07-19     2024-01-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11        P02          54           57    10 2023-08-17     2024-01-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12        P02          99           92    13 2023-12-10     2024-01-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13        P02          66           11     6 2024-05-08     2024-01-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14        P02         140           84     9 2024-05-24     2024-01-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15        P02         143           44    11 2024-06-17     2024-01-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16        P02         125           77     8 2024-09-13     2024-01-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17        P02          37           12    14 2024-10-29     2024-01-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18        P02          62           47     5 2024-12-26     2024-01-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19        P03          46           64     6 2023-02-07     2023-06-23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20        P03         144           41    11 2023-02-15     2023-06-23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21        P03         130           78    12 2023-06-05     2023-06-23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22        P03         126           45     8 2023-10-04     2023-06-23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23        P03          42           20     4 2023-10-23     2023-06-23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24        P03         131           42    13 2023-11-12     2023-06-23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25        P03          62           16     9 2024-03-22     2023-06-23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26        P03         106           32    14 2024-03-29     2023-06-23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27        P03         111           43     7 2024-05-09     2023-06-23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    days_difference     time</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1        -171 days baseline</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2         -31 days baseline</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3         -21 days baseline</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4         116 days     6mth</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5         133 days     6mth</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6         151 days     6mth</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7         261 days    12mth</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8         295 days    12mth</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9         334 days    12mth</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10       -169 days baseline</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11       -140 days baseline</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12        -25 days baseline</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13        125 days     6mth</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14        141 days     6mth</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15        165 days     6mth</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16        253 days    12mth</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17        299 days    12mth</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18        357 days    12mth</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19       -136 days baseline</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20       -128 days baseline</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21        -18 days baseline</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22        103 days     6mth</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23        122 days     6mth</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24        142 days     6mth</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25        273 days    12mth</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26        280 days    12mth</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27        321 days    12mth</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Extract readings ----------------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co">## 1. Baseline reading: latest reading in "-180 days &lt;= days_difference &lt;= 0 days"</span></span></span>
+<span class="r-in"><span><span class="co">## 2. 6-month reading: latest reading in "100 days &lt;= days_difference &lt;= 180 days"</span></span></span>
+<span class="r-in"><span><span class="co">## 3. 12-month reading: latest reading in "240 days &lt;= days_difference &lt;= 360 days"</span></span></span>
 <span class="r-in"><span><span class="va">df_master</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="co"># Blood pressure</span></span></span>
 <span class="r-in"><span>  <span class="fu">extract_reading_from_interval</span><span class="op">(</span></span></span>
@@ -242,26 +286,30 @@ values are numeric vectors that represent <code>c(lower_bound, upper_bound)</cod
 <span class="r-in"><span>    <span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> &lt;enrolment_date&gt; is dropped from df_long,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> instead it will be taken from df_master</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> &lt;enrolment_date&gt; is dropped from df_long,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> instead it will be taken from df_master</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   patient_id enrolment_date bp_systolic_date_baseline bp_systolic_baseline</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1        P01     2023-06-12                2023-05-22                   53</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2        P02     2024-01-03                2023-12-09                   99</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3        P03     2023-06-22                2023-06-04                  130</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1        P01     2023-06-13                2023-05-23                   53</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2        P02     2024-01-04                2023-12-10                   99</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3        P03     2023-06-23                2023-06-05                  130</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   bp_diastolic_baseline bp_systolic_date_6mth bp_systolic_6mth</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                    14            2023-11-10               31</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                    92            2024-06-16              143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                    78            2023-11-11              131</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                    14            2023-11-11               31</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                    92            2024-06-17              143</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                    78            2023-11-12              131</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   bp_diastolic_6mth bp_systolic_date_12mth bp_systolic_12mth bp_diastolic_12mth</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                70             2024-05-11                72                 72</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                44             2024-12-25                62                 47</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                42             2024-05-08               111                 43</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                70             2024-05-12                72                 72</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                44             2024-12-26                62                 47</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                42             2024-05-09               111                 43</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   hba1c_date_baseline hba1c_baseline hba1c_date_6mth hba1c_6mth</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1          2023-05-22              6      2023-11-10         12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2          2023-12-09             13      2024-06-16         11</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3          2023-06-04             12      2023-11-11         13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          2023-05-23              6      2023-11-11         12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2          2023-12-10             13      2024-06-17         11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3          2023-06-05             12      2023-11-12         13</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   hba1c_date_12mth hba1c_12mth</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1       2024-05-11          11</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2       2024-12-25           5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3       2024-05-08           7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1       2024-05-12          11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       2024-12-26           5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3       2024-05-09           7</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
