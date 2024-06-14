@@ -201,15 +201,16 @@ label_ix_columns <- function(df, pattern, suffix = TRUE) {
 #' 1. a set of parameters that define the window period of observation for
 #'    considering readings that would constitute as "baseline" reading,
 #'    "3-month" reading etc. for example:
-#'     - _baseline_: T-180 days to T
-#'     - _3-month_: T+31 days to T+90 days
-#'     - where T is the index date which could be the enrolment date or
+#'     - _baseline_: _T-180_ days to _T_
+#'     - _3-month_: _T+31_ days to _T+90_ days
+#'     - where _T_ is the index date which could be the enrolment date or
 #'       date of first visit
 #'
 #' @param df_master (data.frame) Master dataframe to join the readings unto.
 #' _df_master_ must minimally contain the following 2 columns:
 #' - A column of IDs to identify each patient
-#' - A column of index dates (represented by T as described above) for each patient
+#' - A column of index dates (what we refer to as _T_ in the description above) for each patient
+#' - Both these columns will be identified in _df_master_fields_
 #' @param df_master_fields (list) A named list to identify the _ID_ and
 #' _index date_ columns in _df_master_
 #' - It takes on this format: `list(ID = <your_ID_column>, index_date = <your_index_date_column>)`
@@ -223,6 +224,11 @@ label_ix_columns <- function(df, pattern, suffix = TRUE) {
 #' @param params (list) A named list where the names are the timepoints and the
 #' values are numeric vectors that represent `c(lower_bound, upper_bound)`
 #' - For example: `params <- list(baseline = c(-180, 0), "3mth" = c(31, 90), "6mth" = c(120, 180))`
+#' - Both `lower` and `upper` bounds are included in defining the window period i.e. `lower_bound` <= reading_date <= `upper_bound`
+#' - For `params` given above, `extract_reading_from_interval` will consider
+#'     - Baseline reading: latest reading in _T-180_ days <= reading_date <= _T_ window
+#'     - 3-month reading: latest reading in _T+31_ days <= reading_date <= _T+90_ days window
+#'     - 6-month reading: latest reading in _T+120_ days <= reading_date <= _T+180_ days window
 #'
 #' @return (data.frame) _df_master_ with longitudinal readings joined unto
 #' @importFrom rlang .data
@@ -247,7 +253,10 @@ label_ix_columns <- function(df, pattern, suffix = TRUE) {
 #'       time == "baseline" ~ enrolment_date + sample(-180:0, 3, replace = FALSE),
 #'       time == "6mth" ~ enrolment_date + sample(100:180, 3, replace = FALSE),
 #'       time == "12mth" ~ enrolment_date + sample(240:360, 3, replace = FALSE)
-#'     ))
+#'     ),
+#'     days_difference = visit_date - enrolment_date) %>%
+#'   relocate(enrolment_date, .after = visit_date) %>%
+#'   relocate(time, .after = days_difference)
 #' }
 #'
 #' df_long <- rbind(
@@ -262,10 +271,17 @@ label_ix_columns <- function(df, pattern, suffix = TRUE) {
 #' print(df_master)
 #'
 #' # Longitudinal data of readings
-#' df_long <- df_long %>% select(-enrolment_date)
+#' ## 1. days_difference = visit_date - enrolment_date
+#' ## 2. enrolment_date, days_difference and time are not required as input but
+#' ##    are shown for illustration purpose
+#' ## 3. enrolment_date will be joined unto df_long from df_master internally
+#' ## 4. days_difference will be computed internally
 #' print(df_long)
 #'
 #' # Extract readings ----------------------------------------------------------
+#' ## 1. Baseline reading: latest reading in "-180 days <= days_difference <= 0 days"
+#' ## 2. 6-month reading: latest reading in "100 days <= days_difference <= 180 days"
+#' ## 3. 12-month reading: latest reading in "240 days <= days_difference <= 360 days"
 #' df_master %>%
 #'   # Blood pressure
 #'   extract_reading_from_interval(

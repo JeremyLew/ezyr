@@ -17,7 +17,8 @@ extract_reading_from_interval(
 \emph{df_master} must minimally contain the following 2 columns:
 \itemize{
 \item A column of IDs to identify each patient
-\item A column of index dates (represented by T as described above) for each patient
+\item A column of index dates (what we refer to as \emph{T} in the description above) for each patient
+\item Both these columns will be identified in \emph{df_master_fields}
 }}
 
 \item{df_master_fields}{(list) A named list to identify the \emph{ID} and
@@ -43,6 +44,13 @@ extract_reading_from_interval(
 values are numeric vectors that represent \code{c(lower_bound, upper_bound)}
 \itemize{
 \item For example: \code{params <- list(baseline = c(-180, 0), "3mth" = c(31, 90), "6mth" = c(120, 180))}
+\item Both \code{lower} and \code{upper} bounds are included in defining the window period i.e. \code{lower_bound} <= reading_date <= \code{upper_bound}
+\item For \code{params} given above, \code{extract_reading_from_interval} will consider
+\itemize{
+\item Baseline reading: latest reading in \emph{T-180} days <= reading_date <= \emph{T} window
+\item 3-month reading: latest reading in \emph{T+31} days <= reading_date <= \emph{T+90} days window
+\item 6-month reading: latest reading in \emph{T+120} days <= reading_date <= \emph{T+180} days window
+}
 }}
 }
 \value{
@@ -58,9 +66,9 @@ window periods to be considered as the "baseline" reading, "3-month" reading etc
 considering readings that would constitute as "baseline" reading,
 "3-month" reading etc. for example:
 \itemize{
-\item \emph{baseline}: T-180 days to T
-\item \emph{3-month}: T+31 days to T+90 days
-\item where T is the index date which could be the enrolment date or
+\item \emph{baseline}: \emph{T-180} days to \emph{T}
+\item \emph{3-month}: \emph{T+31} days to \emph{T+90} days
+\item where \emph{T} is the index date which could be the enrolment date or
 date of first visit
 }
 }
@@ -84,7 +92,10 @@ generate_fake_patient_data <- function(id) {
       time == "baseline" ~ enrolment_date + sample(-180:0, 3, replace = FALSE),
       time == "6mth" ~ enrolment_date + sample(100:180, 3, replace = FALSE),
       time == "12mth" ~ enrolment_date + sample(240:360, 3, replace = FALSE)
-    ))
+    ),
+    days_difference = visit_date - enrolment_date) \%>\%
+  relocate(enrolment_date, .after = visit_date) \%>\%
+  relocate(time, .after = days_difference)
 }
 
 df_long <- rbind(
@@ -99,10 +110,17 @@ df_master <- df_long \%>\% distinct(patient_id, enrolment_date)
 print(df_master)
 
 # Longitudinal data of readings
-df_long <- df_long \%>\% select(-enrolment_date)
+## 1. days_difference = visit_date - enrolment_date
+## 2. enrolment_date, days_difference and time are not required as input but
+##    are shown for illustration purpose
+## 3. enrolment_date will be joined unto df_long from df_master internally
+## 4. days_difference will be computed internally
 print(df_long)
 
 # Extract readings ----------------------------------------------------------
+## 1. Baseline reading: latest reading in "-180 days <= days_difference <= 0 days"
+## 2. 6-month reading: latest reading in "100 days <= days_difference <= 180 days"
+## 3. 12-month reading: latest reading in "240 days <= days_difference <= 360 days"
 df_master \%>\%
   # Blood pressure
   extract_reading_from_interval(
