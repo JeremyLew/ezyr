@@ -9,7 +9,7 @@ ezyr_save_rds(df, filepath, key)
 \arguments{
 \item{df}{(data.frame) A dataframe which you want to save to rds format}
 
-\item{filepath}{(character) Filepath to save your RDS file to}
+\item{filepath}{(character) File path to save your RDS file to}
 
 \item{key}{(cyphr_key) Sodium key obtained from invoking \link{ask_for_key}}
 }

@@ -7,7 +7,7 @@
 ezyr_read_rds(filepath, key)
 }
 \arguments{
-\item{filepath}{(character) Filepath to encrypted RDS file}
+\item{filepath}{(character) File path to encrypted RDS file}
 
 \item{key}{(cyphr_key) Sodium key obtained from invoking \link{ask_for_key}}
 }

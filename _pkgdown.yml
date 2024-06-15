@@ -20,6 +20,7 @@ reference:
   - ask_for_key
   - ezyr_save_rds
   - ezyr_read_rds
+  - export_excel_to_rds
 
 - title: Data operations
   desc: >

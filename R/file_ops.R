@@ -119,7 +119,7 @@ ask_for_key <- function(key = NULL) {
 #' a sodium symmetric key.
 #'
 #' @param df (data.frame) A dataframe which you want to save to rds format
-#' @param filepath (character) Filepath to save your RDS file to
+#' @param filepath (character) File path to save your RDS file to
 #' @param key (cyphr_key) Sodium key obtained from invoking [ask_for_key]
 #'
 #' @return (data.frame) Original input dataframe
@@ -164,7 +164,7 @@ ezyr_save_rds <- function(df, filepath, key) {
 #'
 #' `ezyr_read_rds` reads data from an encrypted RDS file.
 #'
-#' @param filepath (character) Filepath to encrypted RDS file
+#' @param filepath (character) File path to encrypted RDS file
 #' @param key (cyphr_key) Sodium key obtained from invoking [ask_for_key]
 #'
 #' @return Decrypted data from the encrypted RDS file
@@ -201,4 +201,82 @@ ezyr_save_rds <- function(df, filepath, key) {
 #'
 ezyr_read_rds <- function(filepath, key) {
   cyphr::decrypt(readRDS(filepath), key)
+}
+
+
+#' Export excel sheets to RDS files
+#'
+#' `export_excel_to_rds` exports each excel sheet in an excel workbook into
+#' a separate RDS file.
+#'
+#' @param filepath (character) File path to excel workbook
+#' @param encrypt_file (logical) If TRUE, each RDS file will be encrypted. See
+#' [ezyr_save_rds] which will be called internally
+#' @param key (character) Optional argument for [ask_for_key], which will be
+#' called internally. Defaults to NULL, for which the user will be prompted for
+#' a passkey at runtime via [rstudioapi::askForPassword]
+#' @param ... (ellipsis) Extra arguments to pass into [readxl::read_excel],
+#' which will be called internally
+#'
+#' @return None
+#' @export
+#'
+#' @examples
+#' library(mlbench)
+#' data("BostonHousing2")
+#' data("Glass")
+#' data("Ozone")
+#'
+#' # Create excel workbook with 3 sheets of data -------------------------------
+#' excel_workbook_filepath <- file.path(tempdir(), "myfile.xlsx")
+#' export_to_excel(BostonHousing2, excel_workbook_filepath, sheet_name = "BH2")
+#' export_to_excel(Glass, excel_workbook_filepath, sheet_name = "Glass")
+#' export_to_excel(Ozone, excel_workbook_filepath, sheet_name = "Ozone")
+#'
+#' # Run export_excel_to_rds ---------------------------------------------------
+#' ## You may opt to omit "key" argument and get prompted for it at runtime
+#' export_excel_to_rds(excel_workbook_filepath, encrypt = TRUE, key = "12345")
+#' print(list.files(tempdir(), pattern = "\\.(xlsx|xls|rds)$"))
+#'
+#' # Delete the created files in temp directory --------------------------------
+#' unlink(excel_workbook_filepath)
+#' unlink(file.path(tempdir(), "myfile_bh2.rds"))
+#' unlink(file.path(tempdir(), "myfile_glass.rds"))
+#' unlink(file.path(tempdir(), "myfile_ozone.rds"))
+#' print(list.files(tempdir(), pattern = "\\.(xlsx|xls|rds)$"))
+#'
+export_excel_to_rds <- function(filepath,
+                                encrypt_file = TRUE,
+                                key = NULL,
+                                ...) {
+  if (encrypt_file) {
+    key <- ask_for_key(key)
+  }
+
+  for (sheet in readxl::excel_sheets(filepath)) {
+    # read excel sheet data into dataframe
+    df <- readxl::read_excel(filepath, sheet = sheet, ...)
+
+    # output filepath of RDS file
+    out_path <- sprintf(
+      "%s_%s.rds", tools::file_path_sans_ext(filepath),
+      janitor::make_clean_names(sheet)
+    )
+
+    if (encrypt_file) {
+      # save rds file
+      ezyr_save_rds(df, out_path, key)
+
+      # read back file and check
+      df_read_back <- ezyr_read_rds(out_path, key)
+      print(diffdf::diffdf(base = df, compare = df_read_back))
+    } else {
+      # save rds file
+      saveRDS(df, out_path)
+
+      # read back file and check
+      df_read_back <- readRDS(out_path)
+      print(diffdf::diffdf(base = df, compare = df_read_back))
+    }
+  }
 }
