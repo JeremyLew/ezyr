@@ -427,6 +427,7 @@ extract_reading_from_interval <- function(df_master,
 #'
 #'
 #' @param tableby_obj (tableby object) An [arsenal::tableby] object
+#' @param data (data.frame) Data passed into `tableby_obj`
 #' @param smd (logical) If TRUE, computes the standardised mean difference (SMD)
 #' @param smd_digits (numeric) Number of decimal places to express SMD
 #' @param bold_var (logical) If TRUE, variable sub-headers will be wrapped with **
@@ -439,28 +440,28 @@ extract_reading_from_interval <- function(df_master,
 #' library(labelled)
 #' library(MatchIt)
 #' data(lalonde)
-#' 
+#'
 #' # Add labels (optional) -----------------------------------------------------
-#' var_label(lalonde) <- list(age = "Age",
-#'                            educ = "Education",
-#'                            race = "Race",
-#'                            married = "Marital status")
-#' 
+#' var_label(lalonde) <- list(
+#'   age = "Age",
+#'   educ = "Education",
+#'   race = "Race",
+#'   married = "Marital status"
+#' )
+#'
 #' # Create tableby table ------------------------------------------------------
 #' tableby(treat ~ age + educ + race + married,
 #'   data = lalonde,
 #'   control = tableby.control(numeric.stats = c("Nmiss", "meansd", "medianq1q3", "range"))
 #' ) %>%
-#'   extend_tableby()
+#'   extend_tableby(lalonde)
 #'
 extend_tableby <- function(tableby_obj,
+                           data,
                            smd = TRUE,
                            smd_digits = 2,
                            bold_var = TRUE) {
   SMD <- Variable <- marker <- NULL
-
-  # input data to tableby
-  data <- eval(tableby_obj$Call$data)
 
   table <- tableby_obj %>%
     summary(
@@ -534,6 +535,8 @@ extend_tableby <- function(tableby_obj,
 #' which enables the joining of two paired tables together.
 #'
 #' @param paired_obj (paired object) An [arsenal::paired] object
+#' @param labels (list) An optional named list of variable labels, for the data
+#' passed into `paired_obj`. `labels` may be set with [labelled::var_label]
 #' @param bold_var (logical) If TRUE, variable sub-headers will be wrapped with **
 #'
 #' @return (data.frame) A paired table appended with marker
@@ -543,7 +546,7 @@ extend_tableby <- function(tableby_obj,
 #' library(arsenal)
 #' library(tidyverse)
 #' library(labelled)
-#' 
+#'
 #' # Generate fake patient data for illustration -------------------------------
 #' generate_fake_patient_data <- function(id) {
 #'   data.frame(list(
@@ -561,12 +564,8 @@ extend_tableby <- function(tableby_obj,
 #' ) %>%
 #'   bind_rows()
 #' print(head(data, 10))
-#' 
-#' # Add labels (optional) -----------------------------------------------------
-#' var_label(data) <- list(hba1c = "Hemoglobin A1c",
-#'                         ldl = "LDL control")
 #'
-#' # Create paired table -------------------------------------------------------
+#' # Create paired table without labels ----------------------------------------
 #' paired(time ~ hba1c + ldl,
 #'   data = data %>% mutate(across(
 #'     .cols = time,
@@ -582,12 +581,39 @@ extend_tableby <- function(tableby_obj,
 #' ) %>%
 #'   extend_paired()
 #'
-extend_paired <- function(paired_obj, bold_var = TRUE) {
+#' # Create paired table with labels -------------------------------------------
+#' ## Add labels
+#' var_label(data) <- list(
+#'   hba1c = "Hemoglobin A1c",
+#'   ldl = "LDL control"
+#' )
+#'
+#' ## Create paired table
+#' paired(time ~ hba1c + ldl,
+#'   data = data %>% mutate(across(
+#'     .cols = time,
+#'     .fns = ~ fct_relevel(.x, "baseline", "12-month")
+#'   )),
+#'   id = patient_id,
+#'   control = paired.control(
+#'     digits = 2,
+#'     numeric.stats = c("Nmiss", "meansd", "medianq1q3", "range"),
+#'     numeric.test = "signed.rank",
+#'     signed.rank.correct = FALSE
+#'   )
+#' ) %>%
+#'   extend_paired(labels = var_label(data))
+#'
+extend_paired <- function(paired_obj,
+                          labels = NULL,
+                          bold_var = TRUE) {
   marker <- Variable <- NULL
 
-  # input data to paired
-  data <- eval(paired_obj$Call$data)
-  labels <- labelled::var_label(data)
+  # create labels placeholder if NULL
+  if (is.null(labels)) {
+    vars <- all.vars(paired_obj$Call$formula)
+    labels <- stats::setNames(replicate(length(vars), NULL), vars)
+  }
 
   table <- paired_obj %>%
     summary(text = TRUE, labelTranslations = purrr::map(labels, ~NULL)) %>%

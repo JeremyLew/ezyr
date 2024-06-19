@@ -4,10 +4,13 @@
 \alias{extend_paired}
 \title{Extend a paired table}
 \usage{
-extend_paired(paired_obj, bold_var = TRUE)
+extend_paired(paired_obj, labels = NULL, bold_var = TRUE)
 }
 \arguments{
 \item{paired_obj}{(paired object) An \link[arsenal:paired]{arsenal::paired} object}
+
+\item{labels}{(list) An optional named list of variable labels, for the data
+passed into \code{paired_obj}. \code{labels} may be set with \link[labelled:var_label]{labelled::var_label}}
 
 \item{bold_var}{(logical) If TRUE, variable sub-headers will be wrapped with **}
 }
@@ -41,11 +44,7 @@ data <- map(
   bind_rows()
 print(head(data, 10))
 
-# Add labels (optional) -----------------------------------------------------
-var_label(data) <- list(hba1c = "Hemoglobin A1c",
-                        ldl = "LDL control")
-
-# Create paired table -------------------------------------------------------
+# Create paired table without labels ----------------------------------------
 paired(time ~ hba1c + ldl,
   data = data \%>\% mutate(across(
     .cols = time,
@@ -60,5 +59,26 @@ paired(time ~ hba1c + ldl,
   )
 ) \%>\%
   extend_paired()
+
+# Create paired table with labels -------------------------------------------
+## Add labels
+var_label(data) <- list(hba1c = "Hemoglobin A1c",
+                        ldl = "LDL control")
+
+## Create paired table
+paired(time ~ hba1c + ldl,
+  data = data \%>\% mutate(across(
+    .cols = time,
+    .fns = ~ fct_relevel(.x, "baseline", "12-month")
+  )),
+  id = patient_id,
+  control = paired.control(
+    digits = 2,
+    numeric.stats = c("Nmiss", "meansd", "medianq1q3", "range"),
+    numeric.test = "signed.rank",
+    signed.rank.correct = FALSE
+  )
+) \%>\%
+  extend_paired(labels = var_label(data))
 
 }

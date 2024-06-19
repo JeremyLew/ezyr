@@ -4,10 +4,12 @@
 \alias{extend_tableby}
 \title{Extend a tableby table}
 \usage{
-extend_tableby(tableby_obj, smd = TRUE, smd_digits = 2, bold_var = TRUE)
+extend_tableby(tableby_obj, data, smd = TRUE, smd_digits = 2, bold_var = TRUE)
 }
 \arguments{
 \item{tableby_obj}{(tableby object) An \link[arsenal:tableby]{arsenal::tableby} object}
+
+\item{data}{(data.frame) Data passed into \code{tableby_obj}}
 
 \item{smd}{(logical) If TRUE, computes the standardised mean difference (SMD)}
 
@@ -43,6 +45,6 @@ tableby(treat ~ age + educ + race + married,
   data = lalonde,
   control = tableby.control(numeric.stats = c("Nmiss", "meansd", "medianq1q3", "range"))
 ) \%>\%
-  extend_tableby()
+  extend_tableby(lalonde)
 
 }
