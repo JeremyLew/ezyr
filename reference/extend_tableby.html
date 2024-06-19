@@ -60,13 +60,17 @@ following to a tableby table:</p><ol><li><p>Marker for enabling the joining of t
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">extend_tableby</span><span class="op">(</span><span class="va">tableby_obj</span>, smd <span class="op">=</span> <span class="cn">TRUE</span>, smd_digits <span class="op">=</span> <span class="fl">2</span>, bold_var <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">extend_tableby</span><span class="op">(</span><span class="va">tableby_obj</span>, <span class="va">data</span>, smd <span class="op">=</span> <span class="cn">TRUE</span>, smd_digits <span class="op">=</span> <span class="fl">2</span>, bold_var <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>tableby_obj</dt>
 <dd><p>(tableby object) An <a href="https://mayoverse.github.io/arsenal/reference/tableby.html" class="external-link">arsenal::tableby</a> object</p></dd>
+
+
+<dt>data</dt>
+<dd><p>(data.frame) Data passed into <code>tableby_obj</code></p></dd>
 
 
 <dt>smd</dt>
@@ -106,21 +110,21 @@ following to a tableby table:</p><ol><li><p>Marker for enabling the joining of t
 <span class="r-in"><span>  data <span class="op">=</span> <span class="va">lalonde</span>,</span></span>
 <span class="r-in"><span>  control <span class="op">=</span> <span class="fu"><a href="https://mayoverse.github.io/arsenal/reference/tableby.control.html" class="external-link">tableby.control</a></span><span class="op">(</span>numeric.stats <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Nmiss"</span>, <span class="st">"meansd"</span>, <span class="st">"medianq1q3"</span>, <span class="st">"range"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu">extend_tableby</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">extend_tableby</span><span class="op">(</span><span class="va">lalonde</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              Variable               0 (N=429)               1 (N=185)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1             **age**                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1             **Age**                                                </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2        -  Mean (SD)         28.030 (10.787)          25.816 (7.155)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3  -  Median (Q1, Q3) 25.000 (19.000, 35.000) 25.000 (20.000, 29.000)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4            -  Range         16.000 - 55.000         17.000 - 48.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5            **educ**                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5       **Education**                                                </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6        -  Mean (SD)          10.235 (2.855)          10.346 (2.011)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 7  -  Median (Q1, Q3)  11.000 (9.000, 12.000)  11.000 (9.000, 12.000)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 8            -  Range          0.000 - 18.000          4.000 - 16.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9            **race**                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9            **Race**                                                </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 10           -  black              87 (20.3%)             156 (84.3%)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 11          -  hispan              61 (14.2%)               11 (5.9%)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 12           -  white             281 (65.5%)               18 (9.7%)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13        **married**                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13 **Marital status**                                                </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 14       -  Mean (SD)           0.513 (0.500)           0.189 (0.393)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 15 -  Median (Q1, Q3)    1.000 (0.000, 1.000)    0.000 (0.000, 0.000)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 16           -  Range           0.000 - 1.000           0.000 - 1.000</span>
