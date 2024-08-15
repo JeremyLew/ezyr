@@ -2,6 +2,7 @@
 
 export("%>%")
 export(ask_for_key)
+export(do_multicollinearity_test)
 export(export_dataframe_labels)
 export(export_excel_to_rds)
 export(export_to_excel)

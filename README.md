@@ -15,3 +15,9 @@ install.packages("devtools")
 # Install ezyr from this github repository
 devtools::install_github("JeremyLew/ezyr")
 ```
+
+# Uninstallation
+
+```
+remove.packages("ezyr")
+```

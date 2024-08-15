@@ -35,10 +35,12 @@ library(MatchIt)
 data(lalonde)
 
 # Add labels (optional) -----------------------------------------------------
-var_label(lalonde) <- list(age = "Age",
-                           educ = "Education",
-                           race = "Race",
-                           married = "Marital status")
+var_label(lalonde) <- list(
+  age = "Age",
+  educ = "Education",
+  race = "Race",
+  married = "Marital status"
+)
 
 # Create tableby table ------------------------------------------------------
 tableby(treat ~ age + educ + race + married,

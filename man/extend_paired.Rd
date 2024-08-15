@@ -62,8 +62,10 @@ paired(time ~ hba1c + ldl,
 
 # Create paired table with labels -------------------------------------------
 ## Add labels
-var_label(data) <- list(hba1c = "Hemoglobin A1c",
-                        ldl = "LDL control")
+var_label(data) <- list(
+  hba1c = "Hemoglobin A1c",
+  ldl = "LDL control"
+)
 
 ## Create paired table
 paired(time ~ hba1c + ldl,
