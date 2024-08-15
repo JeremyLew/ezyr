@@ -48,3 +48,9 @@ reference:
     Functions that help with plotting
   contents:
   - plot_propensity_score_histogram
+
+- title: Statistics
+  desc: >
+    Functions that help with statistics
+  contents:
+  - do_multicollinearity_test
