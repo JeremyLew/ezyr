@@ -33,7 +33,7 @@ date of first visit
 
     <a class="navbar-brand me-2" href="../index.html">ezyr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -169,9 +169,9 @@ values are numeric vectors that represent <code>c(lower_bound, upper_bound)</cod
 <span class="r-in"><span><span class="va">df_master</span> <span class="op">&lt;-</span> <span class="va">df_long</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="va">patient_id</span>, <span class="va">enrolment_date</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">df_master</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   patient_id enrolment_date</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1        P01     2024-04-17</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2        P02     2023-08-08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3        P03     2024-02-13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1        P01     2024-04-23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2        P02     2023-08-14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3        P03     2024-02-19</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Longitudinal data of readings</span></span></span>
 <span class="r-in"><span><span class="co">## 1. days_difference = visit_date - enrolment_date</span></span></span>
@@ -181,33 +181,33 @@ values are numeric vectors that represent <code>c(lower_bound, upper_bound)</cod
 <span class="r-in"><span><span class="co">## 4. days_difference will be computed internally</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">df_long</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    patient_id bp_systolic bp_diastolic hba1c visit_date enrolment_date</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1         P01          74           38     4 2023-11-08     2024-04-17</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2         P01         138           71     6 2024-01-14     2024-04-17</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3         P01          66           25     8 2024-02-12     2024-04-17</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4         P01         134           43     9 2024-07-29     2024-04-17</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5         P01         151           35    11 2024-08-01     2024-04-17</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6         P01          61           23    13 2024-09-23     2024-04-17</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7         P01         127           53     7 2025-02-02     2024-04-17</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8         P01          58           59    14 2025-02-07     2024-04-17</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9         P01          40           95    12 2025-04-08     2024-04-17</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10        P02          96           12    14 2023-06-19     2023-08-08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11        P02          54           34     8 2023-07-11     2023-08-08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12        P02          63           74     5 2023-07-19     2023-08-08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13        P02          86           29     4 2023-12-15     2023-08-08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14        P02          78           18     6 2024-01-27     2023-08-08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15        P02         118           15    12 2024-01-29     2023-08-08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16        P02         119           86    10 2024-04-06     2023-08-08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17        P02         155           89    11 2024-05-02     2023-08-08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18        P02          83           88     7 2024-06-03     2023-08-08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19        P03         107           43     7 2023-10-12     2024-02-13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20        P03          45           28     4 2023-10-23     2024-02-13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21        P03          49           27     9 2023-12-17     2024-02-13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22        P03          65           21    11 2024-06-30     2024-02-13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23        P03         110           75     6 2024-07-04     2024-02-13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24        P03          75           90    10 2024-07-23     2024-02-13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25        P03         101           25     8 2024-10-23     2024-02-13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26        P03         160           71    14 2024-12-21     2024-02-13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27        P03         102           54    13 2024-12-23     2024-02-13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1         P01          74           38     4 2023-11-14     2024-04-23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2         P01         138           71     6 2024-01-20     2024-04-23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3         P01          66           25     8 2024-02-18     2024-04-23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4         P01         134           43     9 2024-08-04     2024-04-23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5         P01         151           35    11 2024-08-07     2024-04-23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6         P01          61           23    13 2024-09-29     2024-04-23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7         P01         127           53     7 2025-02-08     2024-04-23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8         P01          58           59    14 2025-02-13     2024-04-23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9         P01          40           95    12 2025-04-14     2024-04-23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10        P02          96           12    14 2023-06-25     2023-08-14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11        P02          54           34     8 2023-07-17     2023-08-14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12        P02          63           74     5 2023-07-25     2023-08-14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13        P02          86           29     4 2023-12-21     2023-08-14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14        P02          78           18     6 2024-02-02     2023-08-14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15        P02         118           15    12 2024-02-04     2023-08-14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16        P02         119           86    10 2024-04-12     2023-08-14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17        P02         155           89    11 2024-05-08     2023-08-14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18        P02          83           88     7 2024-06-09     2023-08-14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19        P03         107           43     7 2023-10-18     2024-02-19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20        P03          45           28     4 2023-10-29     2024-02-19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21        P03          49           27     9 2023-12-23     2024-02-19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22        P03          65           21    11 2024-07-06     2024-02-19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23        P03         110           75     6 2024-07-10     2024-02-19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24        P03          75           90    10 2024-07-29     2024-02-19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25        P03         101           25     8 2024-10-29     2024-02-19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26        P03         160           71    14 2024-12-27     2024-02-19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27        P03         102           54    13 2024-12-29     2024-02-19</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    days_difference     time</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1        -161 days baseline</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2         -94 days baseline</span>
@@ -282,25 +282,25 @@ values are numeric vectors that represent <code>c(lower_bound, upper_bound)</cod
 <span class="r-msg co"><span class="r-pr">#&gt;</span> &lt;enrolment_date&gt; is dropped from df_long,</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> instead it will be taken from df_master</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   patient_id enrolment_date bp_systolic_date_baseline bp_systolic_baseline</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1        P01     2024-04-17                2024-02-12                   66</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2        P02     2023-08-08                2023-07-19                   63</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3        P03     2024-02-13                2023-12-17                   49</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1        P01     2024-04-23                2024-02-18                   66</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2        P02     2023-08-14                2023-07-25                   63</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3        P03     2024-02-19                2023-12-23                   49</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   bp_diastolic_baseline bp_systolic_date_6mth bp_systolic_6mth</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                    25            2024-09-23               61</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                    74            2024-01-29              118</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                    27            2024-07-23               75</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                    25            2024-09-29               61</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                    74            2024-02-04              118</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                    27            2024-07-29               75</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   bp_diastolic_6mth bp_systolic_date_12mth bp_systolic_12mth bp_diastolic_12mth</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                23             2025-04-08                40                 95</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                15             2024-06-03                83                 88</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                90             2024-12-23               102                 54</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                23             2025-04-14                40                 95</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                15             2024-06-09                83                 88</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                90             2024-12-29               102                 54</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   hba1c_date_baseline hba1c_baseline hba1c_date_6mth hba1c_6mth</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1          2024-02-12              8      2024-09-23         13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2          2023-07-19              5      2024-01-29         12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3          2023-12-17              9      2024-07-23         10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          2024-02-18              8      2024-09-29         13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2          2023-07-25              5      2024-02-04         12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3          2023-12-23              9      2024-07-29         10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   hba1c_date_12mth hba1c_12mth</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1       2025-04-08          12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2       2024-06-03           7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3       2024-12-23          13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1       2025-04-14          12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2       2024-06-09           7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3       2024-12-29          13</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
