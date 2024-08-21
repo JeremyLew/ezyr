@@ -2,7 +2,7 @@
 % Please edit documentation in R/stats.R
 \name{do_multicollinearity_test}
 \alias{do_multicollinearity_test}
-\title{Do multicollinearity test}
+\title{Perform multicollinearity test on a generalised linear model}
 \usage{
 do_multicollinearity_test(model, vif_threshold = 10)
 }

@@ -1,4 +1,4 @@
-#' Do multicollinearity test
+#' Perform multicollinearity test on a generalised linear model
 #'
 #' `do_multicollinearity_test` is a wrapper function that prints the results from
 #' [car::vif] and [mctest::imcdiag]
