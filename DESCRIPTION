@@ -1,6 +1,6 @@
 Package: ezyr
 Title: Helper Function Toolkit That Makes Data Operations Easier
-Version: 0.0.0.9000
+Version: 0.0.1
 Authors@R: 
     person("Jeremy", "Lew",
            email = "first@example.com",
