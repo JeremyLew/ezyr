@@ -21,6 +21,7 @@ reference:
   - ezyr_save_rds
   - ezyr_read_rds
   - export_excel_to_rds
+  - ezyr_decrypt_rds
 
 - title: Data operations
   desc: >

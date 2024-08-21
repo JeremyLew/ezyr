@@ -280,3 +280,23 @@ export_excel_to_rds <- function(filepath,
     }
   }
 }
+
+
+#' Decrypt an encrypted RDS file
+#'
+#' @param filepath (character) File path to RDS file
+#' @param key (character) Optional argument for [ask_for_key], which will be
+#' called internally. Defaults to NULL, for which the user will be prompted for
+#' a passkey at runtime via [rstudioapi::askForPassword]
+#'
+#' @return Decrypted RDS file
+#' @export
+#'
+#' @examples
+#' # ezyr_decrypt_rds("C:/Users/<your_username>/.../your_encrypted_file.rds")
+#'
+ezyr_decrypt_rds <- function(filepath, key = NULL) {
+  key <- ask_for_key(key)
+  df <- ezyr_read_rds(filepath, key)
+  df %>% saveRDS(filepath)
+}
